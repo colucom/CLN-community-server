@@ -8,32 +8,21 @@ const Metadata = mongoose.model('Metadata')
 
 const decoder = new StringDecoder('utf8');
 
-// router.param('hash', function (req, res, next, hash) {
-//   req.hash = hash
-//   next();
-// });
-
 const ipfs = new IpfsAPI(ipfsConfig)
 
 const parse = (metadata) => JSON.parse(metadata.toString())
 
-router.get('/', async (req, res, next) => {
-  const metadata = await Metadata.find()
-  return res.json({metadata})
-})
-
-
 router.get('/:hash', async (req, res, next) => {
   const hash = req.params.hash
-  let metadata
+  let data
   try {
-    metadata = await ipfs.files.cat(hash)
+    data = await ipfs.files.cat(hash)
   } catch (e) {
     console.error(e)
     metadataObject = await Metadata.findOne({hash})
-    metadata = metadataObject.data
+    data = metadataObject.data
   }
-  return res.json({metadata: JSON.parse(metadata.toString())})
+  return res.json({data: JSON.parse(data.toString())})
 })
 
 module.exports = router
