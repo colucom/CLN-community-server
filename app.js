@@ -2,8 +2,11 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const errorhandler = require('errorhandler')
+const morgan = require('morgan')
+const methodOverride = require('method-override')
 const mongoose = require('mongoose')
 const path = require('path')
+const config = require('./config')
 
 var isProduction = process.env.NODE_ENV === 'production'
 
@@ -13,21 +16,20 @@ var app = express()
 app.use(cors())
 
 // Normal express config defaults
-app.use(require('morgan')('dev'))
+app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.use(require('method-override')())
+app.use(methodOverride())
 app.use(express.static(path.join(__dirname, 'public')))
 
 if (!isProduction) {
   app.use(errorhandler())
 }
 
-if (isProduction) {
-  mongoose.connect(process.env.MONGODB_URI)
-} else {
-  mongoose.connect('mongodb://localhost/CLN-community-app')
+mongoose.connect(config.mongo.uri)
+
+if (!isProduction) {
   mongoose.set('debug', true)
 }
 
