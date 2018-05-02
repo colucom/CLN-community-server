@@ -1,16 +1,11 @@
 const router = require('express').Router()
 const mongoose = require('mongoose')
 const IpfsAPI = require('ipfs-api')
-const { StringDecoder } = require('string_decoder');
 const ipfsConfig = require('../../config').ipfs
 
 const Metadata = mongoose.model('Metadata')
 
-const decoder = new StringDecoder('utf8');
-
 const ipfs = new IpfsAPI(ipfsConfig)
-
-const parse = (metadata) => JSON.parse(metadata.toString())
 
 router.get('/:protocol/:hash', async (req, res, next) => {
   const protocol = req.params.protocol
@@ -22,15 +17,14 @@ router.get('/:protocol/:hash', async (req, res, next) => {
       return res.json({data: {hash, protocol, data: JSON.parse(data.toString())}})
     } catch (e) {
       console.error(e)
-      metadata = await Metadata.findOne({protocol, hash})
+      const metadata = await Metadata.findOne({protocol, hash})
       return res.json({data: metadata.toJSON()})
     }
   } else {
-    metadata = await Metadata.findOne({protocol, hash})
+    const metadata = await Metadata.findOne({protocol, hash})
     return res.json({data: metadata.toJSON()})
   }
 })
-
 
 router.post('/', async (req, res, next) => {
   const data = Buffer.from(JSON.stringify(req.body.metadata))
@@ -48,11 +42,11 @@ router.post('/', async (req, res, next) => {
     await metadata.save()
     return res.json({data: metadata.toJSON()})
   } catch (error) {
-      // duplication error, someone already added this hash to db
-      if (error.name === 'MongoError' && error.code === 11000) {
-        return res.json({data: metadata.toJSON()})
-      }
-      throw error
+    // duplication error, someone already added this hash to db
+    if (error.name === 'MongoError' && error.code === 11000) {
+      return res.json({data: metadata.toJSON()})
+    }
+    throw error
   }
 })
 
