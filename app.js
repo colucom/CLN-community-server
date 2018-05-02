@@ -7,6 +7,7 @@ const methodOverride = require('method-override')
 const mongoose = require('mongoose')
 const path = require('path')
 const config = require('./config')
+require('express-async-errors')
 
 var isProduction = process.env.NODE_ENV === 'production'
 
