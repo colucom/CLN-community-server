@@ -12,17 +12,48 @@ const ipfs = new IpfsAPI(ipfsConfig)
 
 const parse = (metadata) => JSON.parse(metadata.toString())
 
-router.get('/:hash', async (req, res, next) => {
+router.get('/:protocol/:hash', async (req, res, next) => {
+  const protocol = req.params.protocol
   const hash = req.params.hash
   let data
-  try {
-    data = await ipfs.files.cat(hash)
-  } catch (e) {
-    console.error(e)
-    metadataObject = await Metadata.findOne({hash})
-    data = metadataObject.data
+  if (protocol === 'ipfs') {
+    try {
+      data = await ipfs.files.cat(hash)
+      return res.json({data: {hash, protocol, data: JSON.parse(data.toString())}})
+    } catch (e) {
+      console.error(e)
+      metadata = await Metadata.findOne({protocol, hash})
+      return res.json({data: metadata.toJSON()})
+    }
+  } else {
+    metadata = await Metadata.findOne({protocol, hash})
+    return res.json({data: metadata.toJSON()})
   }
-  return res.json({data: JSON.parse(data.toString())})
+})
+
+
+router.post('/', async (req, res, next) => {
+  const data = Buffer.from(JSON.stringify(req.body.metadata))
+
+  const filesAdded = await ipfs.files.add(data)
+  const hash = filesAdded[0].hash
+
+  const metadata = new Metadata({
+    hash,
+    data,
+    protocol: 'ipfs'
+  })
+
+  try {
+    await metadata.save()
+    return res.json({data: metadata.toJSON()})
+  } catch (error) {
+      // duplication error, someone already added this hash to db
+      if (error.name === 'MongoError' && error.code === 11000) {
+        return res.json({data: metadata.toJSON()})
+      }
+      throw error
+  }
 })
 
 module.exports = router

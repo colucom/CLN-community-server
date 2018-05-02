@@ -8,17 +8,15 @@ var Community = mongoose.model('Community')
 var Metadata = mongoose.model('Metadata')
 
 new Community({
-  name: 'CoolCoin',
-  symbol: 'CC',
+  name: 'TelAvivCoin',
+  symbol: 'TAC',
   address: '0x296582CAb0e44009d2142D7daf33C81f153407F8',
-  metadata: 'QmW7ctbtwQuNQC3Jp6KidztXukyEhtBMQr5oskN3Vi7XBp'
 }).save()
 
 new Community({
-  name: 'HipCoin',
-  symbol: 'HC',
-  address: '0x3355e0C28D759d6d4eF649EF3a6dba11402d1a7f',
-  metadata: 'QmbtpFqCo4v9v3b5HvTxmzaZyKgooVSgNhm6qZsmorj4M5'
+  name: 'LondonCoin',
+  symbol: 'LC',
+  address: '0x0B7d4f3FdB3b517984b68F67Fb2c4528eBf44A7B',
 }).save()
 
 new Metadata({
