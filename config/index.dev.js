@@ -6,6 +6,8 @@ module.exports = {
     protocol: 'https'
   },
   mongo: {
-    uri: 'mongodb://localhost/CLN-community-app'
+    uri: 'mongodb://localhost/CLN-community-app',
+    options: {
+    }
   }
 }

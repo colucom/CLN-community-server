@@ -28,7 +28,7 @@ if (!isProduction) {
   app.use(errorhandler())
 }
 
-mongoose.connect(config.mongo.uri)
+mongoose.connect(config.mongo.uri, config.mongo.options)
 
 if (!isProduction) {
   mongoose.set('debug', true)
