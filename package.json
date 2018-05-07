@@ -19,10 +19,11 @@
     "errorhandler": "1.4.3",
     "express": "4.16.3",
     "express-async-errors": "^2.1.2",
+    "express-jwt": "^5.3.1",
     "ipfs-api": "^20.0.1",
     "method-override": "2.3.5",
     "methods": "1.1.2",
-    "mongoose": "4.4.10",
+    "mongoose": "^5.0.17",
     "mongoose-unique-validator": "1.0.2",
     "morgan": "1.7.0",
     "slug": "0.9.1"

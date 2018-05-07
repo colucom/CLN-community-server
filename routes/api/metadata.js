@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const IpfsAPI = require('ipfs-api')
 const ipfsConfig = require('../../config').ipfs
 
+const auth = require('../auth')
 const Metadata = mongoose.model('Metadata')
 
 const ipfs = new IpfsAPI(ipfsConfig)
@@ -26,7 +27,7 @@ router.get('/:protocol/:hash', async (req, res, next) => {
   }
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', auth.required, async (req, res, next) => {
   const data = Buffer.from(JSON.stringify(req.body.metadata))
 
   const filesAdded = await ipfs.files.add(data)
@@ -39,13 +40,16 @@ router.post('/', async (req, res, next) => {
   })
 
   try {
+    console.log('hello')
     await metadata.save()
+    console.log('after')
     return res.json({data: metadata.toJSON()})
   } catch (error) {
     // duplication error, someone already added this hash to db
     if (error.name === 'MongoError' && error.code === 11000) {
       return res.json({data: metadata.toJSON()})
     }
+    console.log('error')
     throw error
   }
 })
